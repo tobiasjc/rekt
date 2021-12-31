@@ -1,0 +1,141 @@
+#!/bin/bash
+
+OPTS=$(getopt -o n:r:c:h --long nutch-home:,rekt:,collection:,help -- "$@")
+
+function help() {
+	printf "SYNOPSIS\\n"
+	printf "\\trekt [-n | --nutch-home] NUTCH_HOME [-r | --rekt-home] REKT_HOME [-c | --collection] COLLECTION_NAME\\n"
+	printf "\\nARGUMENTS\\n"
+	printf "\\tNUTCH_HOME is the path to the home folder of your nutch instalation. The home folder can be iddentified by having the 'bin' and 'conf' directories at the same level.\\n"
+	printf "\\tREKT_HOME is the path to the rekt instalation toplevel directiory. The toplevel directory can be idenfied by having the 'collections' folder at the same level.\\n "
+	printf "\\tCOLLECTION_NAME can be one of the names available inside the collections folder\\n"
+
+	printf "\\n\\nExample:\\n"
+	printf "\\t./install.sh -n path/to/your/nutch/installation -c dlmf\\n"
+	printf "\\t./install.sh --nutch-home path/to/your/nutch/installation --collection dlmf\\n"
+}
+
+eval set -- "$OPTS"
+while true; do
+	case "$1" in
+	-n | --nutch-home)
+		NUTCH_HOME="$2"
+		shift 2
+		;;
+	-r | --rekt-home)
+		REKT_HOME="$2"
+		shift 2
+		;;
+	-c | --collection)
+		COLLECTION="$2"
+		shift 2
+		;;
+	-h | --help)
+		help
+		exit 0
+		;;
+	--) break ;;
+	*) ;;
+	esac
+done
+
+# set environment variables
+REKT_HOME=${REKT_HOME:?"./"}
+COLLECTIONS_FOLDER="${REKT_HOME}/collections"
+CHOSEN_COLLECTION="${COLLECTIONS_FOLDER}/${COLLECTION}"
+declare -a AVAILABLE_COLLECTIONS
+for c in "${COLLECTIONS_FOLDER}"/*; do
+	AVAILABLE_COLLECTIONS+=("${c##*/}")
+done
+
+# helper contains array function
+function contains() {
+	declare -r el="$1"
+	shift
+	declare -r arr=("$@")
+
+	for e in "${arr[@]}"; do
+		[[ "$el" = "$e" ]] && return 0
+	done
+
+	return 1
+}
+
+# helper print array function
+function format_array() {
+	declare -r arr=("$@")
+
+	format="["
+	for ((i = 0; i < (${#arr[*]} - 1); i = i + 1)); do
+		format+="${arr[i]}, "
+	done
+	format+="${arr[${#arr[*]} - 1]}]"
+
+	echo "$format"
+}
+
+function verify() {
+	local allowed="true"
+	if [[ -z "$NUTCH_HOME" ]]; then
+		printf "\\n\\nEnvironment variable for NUTCH_HOME is not set.\\n"
+		echo "You can either setup this variable on your environment for this script, or run this script using the parameter [ -n | --nutch-home ]."
+		echo "This variable is REQUIRED, the program is going to halt."
+		allowed="false"
+	fi
+
+	if [[ ! -d "$NUTCH_HOME" ]]; then
+		printf "\\n\\nSeems like the variable for NUTCH_HOME doesn't point to a valid installation path.\\n"
+		echo "Please, setup this variable accordingly, pointing to a valid instalation of Apache Nutch, and run this script again."
+		echo "This is REQUIRED, the program is going to halt."
+		allowed="false"
+	fi
+	if [[ -z "$REKT_HOME" ]]; then
+		printf "\\n\\nEnvironment variable for REKT_HOME is not set.\\n"
+		echo "You can either setup this variable on your environment for this script, or run this script using the parameter [ -r | --rekt-home ]."
+		echo "This variable is REQUIRED, the program is going to halt."
+		allowed="false"
+	fi
+
+	if [[ ! -d "$REKT_HOME" ]]; then
+		printf "\\n\\nSeems like the variable for REKT_HOME doesn't point to a valid installation path.\\n"
+		echo "Please, setup this variable accordingly, pointing to a valid instalation of Rekt, and run this script again."
+		echo "This is REQUIRED, the program is going to halt."
+		allowed="false"
+	fi
+
+	if [[ ! -d "$COLLECTIONS_FOLDER" ]]; then
+		printf "\\n"
+		echo "Seems like the collections folder where your REKT_HOME is pointing, that should be at $COLLECTIONS_FOLDER is non existent."
+		echo "Please, have a \"collections\" folder inside the REKT_HOME directory, so the algorithm can make sense of its actions on copying the configuration."
+		echo "This is REQUIRED, the program is going to halt."
+		allowed="false"
+	fi
+
+	if [[ -z "$COLLECTION" ]]; then
+		printf "\\n\\nYou have to select a collection to install on your Apache Nutch path.\\n"
+		echo "You can do it by running this script with the parameter [ -c | --collection ]"
+		echo "This parameter is REQUIRED, the program is going to halt."
+		allowed="false"
+	fi
+
+	if ! contains "$COLLECTION" "${AVAILABLE_COLLECTIONS[@]}"; then
+		printf "\\n\\n"
+		echo "Your chosen collection at ${CHOSEN_COLLECTION} seems to not be a valid directory path."
+		echo "The current available collections at COLLECTIONS_FOLDER=${COLLECTIONS_FOLDER} are: $(format_array "${AVAILABLE_COLLECTIONS[@]}")"
+		echo "Please, chose one of the available and run this script again."
+		echo "This parameter is REQUIRED, the program is going to halt."
+		exit 1
+	fi
+
+	if [[ "$allowed" = "false" ]]; then
+		exit 1
+	fi
+}
+
+# do the program environment verifying
+verify
+
+# do the copying
+echo "Installing the configuration..."
+cp -rvf "${CHOSEN_COLLECTION}"/* "${NUTCH_HOME}"
+echo "Configuration installed with success."

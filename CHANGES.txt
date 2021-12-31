@@ -1,0 +1,6 @@
+# 'Nutchup' poor man's changes tracking
+
+Improvement
+
+	[1] Uses the 'protocol-httpclient' plugin by default on all nutch-site.xml
+	[2] Add the flags -addBinaryContent -base64 as default for the indexing action on the crawl script
