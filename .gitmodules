@@ -1,0 +1,4 @@
+[submodule "nutch-rekt-docker"]
+	path = nutch-rekt-docker
+	url = git@github.com:tobiasjc/nutch-rekt-docker.git
+	branch = main
