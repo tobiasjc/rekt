@@ -30,12 +30,10 @@
 				<field source="title" dest="search" />
 			</copy>
 			<rename>
-				<field source="binaryContent" dest="base64binary" />
+				<field source="binaryContent" dest="base64content" />
+				<field source="content" dest="text" />
 			</rename>
-			<remove>
-				<field source="content" />
-				<field source="binaryContent" />
-			</remove>
+			<remove />
 		</mapping>
 	</writer>
 </writers>
