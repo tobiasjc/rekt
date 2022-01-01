@@ -4,11 +4,13 @@ OPTS=$(getopt -o sn:r:c:h --long start,nutch-home:,rekt:,collection:,help -- "$@
 
 function help() {
 	printf "SYNOPSIS\\n"
-	printf "\\trekt [-s | --start] [-n | --nutch-home] NUTCH_HOME [-r | --rekt-home] REKT_HOME [-c | --collection] COLLECTION_NAME\\n"
+	printf "\\trekt [-s | --start] [-q | --quantity] QUANTITY [-n | --nutch-home] NUTCH_HOME [-r | --rekt-home] REKT_HOME [-c | --collection] COLLECTION_NAME\\n"
 	printf "\\nOPTIONS\\n"
 	printf "\\t-s | --start,\\n"
 	printf "\\tstart the script to crawl the website\\n"
+
 	printf "\\nARGUMENTS\\n"
+	printf "\\tQUANTITY is to define the amount of rounds you want the crawler to go. When this variable is not set, the quantity is -1, which means the crawler will not stop until the whole domain under the rules is fetch.\\n"
 	printf "\\tNUTCH_HOME is the path to the home folder of your nutch instalation. The home folder can be iddentified by having the 'bin' and 'conf' directories at the same level.\\n"
 	printf "\\tREKT_HOME is the path to the rekt instalation toplevel directiory. The toplevel directory can be idenfied by having the 'collections' folder at the same level.\\n "
 	printf "\\tCOLLECTION_NAME can be one of the names available inside the collections folder\\n"
@@ -19,12 +21,17 @@ function help() {
 }
 
 START="false"
+QUANTITY="-1"
 eval set -- "$OPTS"
 while true; do
 	case "$1" in
 	-s | --start)
 		START="true"
 		shift 1
+		;;
+	-q | --quantity)
+		QUANTITY="$2"
+		shift 2
 		;;
 	-n | --nutch-home)
 		NUTCH_HOME="$2"
@@ -150,7 +157,7 @@ echo "Configuration installed with success."
 
 if [[ "$START" = "true" ]]; then
 	echo "Start the crawling of collection=${COLLECTION}"
-	"${NUTCH_HOME}"/bin/crawl -i -s "${NUTCH_HOME}"/urls "${NUTCH_HOME}"/crawl 1
+	"${NUTCH_HOME}"/bin/crawl -i -s "${NUTCH_HOME}"/urls "${NUTCH_HOME}"/crawl "${QUANTITY}"
 	echo "Crawling is finished."
 	exit 0
 fi
