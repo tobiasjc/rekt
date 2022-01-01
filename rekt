@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OPTS=$(getopt -o sn:r:c:h --long start,nutch-home:,rekt:,collection:,help -- "$@")
+OPTS=$(getopt -o sq:n:r:c:h --long start,nutch-home:,rekt:,collection:,help -- "$@")
 
 function help() {
 	printf "SYNOPSIS\\n"
