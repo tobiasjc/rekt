@@ -11,7 +11,7 @@
     <!-- IMPORTANT! -->
     <property>
         <name>plugin.includes</name>
-        <value>protocol-httpclient|urlfilter-(regex|validator)|parse-(html|tika)|index-(basic|anchor)|scoring-opic|urlnormalizer-(pass|regex|basic)</value>
+        <value>protocol-httpclient|urlfilter-(regex|validator)|parse-(html|tika)|index-(basic|anchor)|indexer-(kafka)|scoring-opic|urlnormalizer-(pass|regex|basic)</value>
     </property>
 
     <!-- fetcher -->
