@@ -5,6 +5,9 @@ OPTS=$(getopt -o s:n:r:c:h --long start,nutch-home:,rekt:,collection:,help -- "$
 function help() {
 	printf "SYNOPSIS\\n"
 	printf "\\trekt [-s | --start] [-n | --nutch-home] NUTCH_HOME [-r | --rekt-home] REKT_HOME [-c | --collection] COLLECTION_NAME\\n"
+	printf "\\nOPTIONS\\n"
+	printf "\\t-s | --start,\\n"
+	printf "\\tstart the script to crawl the website\\n"
 	printf "\\nARGUMENTS\\n"
 	printf "\\tNUTCH_HOME is the path to the home folder of your nutch instalation. The home folder can be iddentified by having the 'bin' and 'conf' directories at the same level.\\n"
 	printf "\\tREKT_HOME is the path to the rekt instalation toplevel directiory. The toplevel directory can be idenfied by having the 'collections' folder at the same level.\\n "
@@ -147,6 +150,6 @@ echo "Configuration installed with success."
 
 if [[ "$START" = "true" ]]; then
 	echo "START option is TRUE, starting crawler..."
-	"${NUTCH_HOME}"/bin/crawl -i -s "${NUTCH_HOME}"/urls "${NUTCH_HOME}"/crawl -1
+	crawl -i -s "${NUTCH_HOME}"/urls "${NUTCH_HOME}"/crawl -1
 	echo "Crawler done!"
 fi
