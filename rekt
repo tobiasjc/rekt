@@ -150,7 +150,7 @@ echo "Configuration installed with success."
 
 if [[ "$START" = "true" ]]; then
 	echo "Start the crawling of collection=${COLLECTION}"
-	"${NUTCH_HOME}"/bin/crawl -i -s "${NUTCH_HOME}"/urls "${NUTCH_HOME}"/crawl -1
+	"${NUTCH_HOME}"/bin/crawl -i -s "${NUTCH_HOME}"/urls "${NUTCH_HOME}"/crawl 1
 	echo "Crawling is finished."
 	exit 0
 fi
