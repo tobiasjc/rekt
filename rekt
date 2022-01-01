@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OPTS=$(getopt -o s:n:r:c:h --long start,nutch-home:,rekt:,collection:,help -- "$@")
+OPTS=$(getopt -o sn:r:c:h --long start,nutch-home:,rekt:,collection:,help -- "$@")
 
 function help() {
 	printf "SYNOPSIS\\n"
@@ -149,7 +149,5 @@ cp -rvf "${CHOSEN_COLLECTION}"/* "${NUTCH_HOME}"
 echo "Configuration installed with success."
 
 if [[ "$START" = "true" ]]; then
-	echo "START option is TRUE, starting crawler..."
-	crawl -i -s "${NUTCH_HOME}"/urls "${NUTCH_HOME}"/crawl -1
-	echo "Crawler done!"
+	"${NUTCH_HOME}"/bin/crawl -i -s "${NUTCH_HOME}"/urls "${NUTCH_HOME}"/crawl -1
 fi
