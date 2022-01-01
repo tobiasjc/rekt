@@ -23,7 +23,7 @@
 			<param name="topic" value="main-topic" />
 			<param name="key.serializer" value="org.apache.kafka.common.serialization.ByteArraySerializer" />
 			<param name="value.serializer" value="org.apache.kafka.connect.json.JsonSerializer" />
-			<param name="max.doc.count" value="10" />
+			<param name="max.doc.count" value="100" />
 		</parameters>
 		<mapping>
 			<copy>
