@@ -1,10 +1,10 @@
 #!/bin/bash
 
-OPTS=$(getopt -o n:r:c:h --long nutch-home:,rekt:,collection:,help -- "$@")
+OPTS=$(getopt -o s:n:r:c:h --long start,nutch-home:,rekt:,collection:,help -- "$@")
 
 function help() {
 	printf "SYNOPSIS\\n"
-	printf "\\trekt [-n | --nutch-home] NUTCH_HOME [-r | --rekt-home] REKT_HOME [-c | --collection] COLLECTION_NAME\\n"
+	printf "\\trekt [-s | --start] [-n | --nutch-home] NUTCH_HOME [-r | --rekt-home] REKT_HOME [-c | --collection] COLLECTION_NAME\\n"
 	printf "\\nARGUMENTS\\n"
 	printf "\\tNUTCH_HOME is the path to the home folder of your nutch instalation. The home folder can be iddentified by having the 'bin' and 'conf' directories at the same level.\\n"
 	printf "\\tREKT_HOME is the path to the rekt instalation toplevel directiory. The toplevel directory can be idenfied by having the 'collections' folder at the same level.\\n "
@@ -15,9 +15,14 @@ function help() {
 	printf "\\t./install.sh --nutch-home path/to/your/nutch/installation --collection dlmf\\n"
 }
 
+START="false"
 eval set -- "$OPTS"
 while true; do
 	case "$1" in
+	-s | --start)
+		START="true"
+		shift 1
+		;;
 	-n | --nutch-home)
 		NUTCH_HOME="$2"
 		shift 2
@@ -139,3 +144,9 @@ verify
 echo "Installing the configuration..."
 cp -rvf "${CHOSEN_COLLECTION}"/* "${NUTCH_HOME}"
 echo "Configuration installed with success."
+
+if [[ "$START" = "true" ]]; then
+	echo "START option is TRUE, starting crawler..."
+	"${NUTCH_HOME}"/bin/crawl -i -s "${NUTCH_HOME}"/urls "${NUTCH_HOME}"/crawl -1
+	echo "Crawler done!"
+fi
