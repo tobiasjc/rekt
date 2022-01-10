@@ -58,7 +58,7 @@ ROUNDS=${ROUNDS:="-1"}
 REKT_HOME=${REKT_HOME:="./"}
 DATA_HOME=${DATA_HOME:="${NUTCH_HOME}"}
 COLLECTIONS_FOLDER="${REKT_HOME}/collections"
-CHOSEN_COLLECTION="${COLLECTIONS_FOLDER}/${COLLECTION}"
+COLLECTION_PATH="${COLLECTIONS_FOLDER}/${COLLECTION}"
 declare -a AVAILABLE_COLLECTIONS
 for c in "${COLLECTIONS_FOLDER}"/*; do
 	AVAILABLE_COLLECTIONS+=("${c##*/}")
@@ -137,7 +137,7 @@ function verify() {
 
 	if ! contains "$COLLECTION" "${AVAILABLE_COLLECTIONS[@]}"; then
 		printf "\\n\\n"
-		echo "Your chosen collection at ${CHOSEN_COLLECTION} seems to not be a valid directory path."
+		echo "Your chosen collection at '${COLLECTION_PATH}' seems to not be a valid directory path."
 		echo "The current available collections at COLLECTIONS_FOLDER=${COLLECTIONS_FOLDER} are: $(format_array "${AVAILABLE_COLLECTIONS[@]}")"
 		echo "Please, chose one of the available and run this script again."
 		echo "This parameter is REQUIRED, the program is going to halt."
@@ -154,12 +154,13 @@ verify
 
 # do the copying
 echo "Installing the configuration..."
-cp -rvf "${CHOSEN_COLLECTION}"/* "${NUTCH_HOME}"
+cp -rvf "${COLLECTION_PATH}"/* "${NUTCH_HOME}"
 echo "Configuration installed with success!"
 
+# entry main loop
 if [[ "$START" = "true" ]]; then
 	echo "Start the crawling of collection=${COLLECTION}"
-	"${NUTCH_HOME}"/bin/crawl -i -s "${NUTCH_HOME}"/urls "${DATA_HOME}/${COLLECTION}"/crawl "${ROUNDS}"
+	"${NUTCH_HOME}"/bin/crawl -i -s "${NUTCH_HOME}/urls" "${DATA_HOME}/crawl" ${ROUNDS}
 	echo "Crawling is finished."
 	exit 0
 fi
