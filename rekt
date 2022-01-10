@@ -56,7 +56,6 @@ done
 # set environment variables
 ROUNDS=${ROUNDS:="-1"}
 REKT_HOME=${REKT_HOME:="./"}
-DATA_HOME=${DATA_HOME:="${NUTCH_HOME}"}
 COLLECTIONS_FOLDER="${REKT_HOME}/collections"
 COLLECTION_PATH="${COLLECTIONS_FOLDER}/${COLLECTION}"
 declare -a AVAILABLE_COLLECTIONS
@@ -160,7 +159,8 @@ echo "Configuration installed with success!"
 # entry main loop
 if [[ "$START" = "true" ]]; then
 	echo "Start the crawling of collection=${COLLECTION}"
-	"${NUTCH_HOME}"/bin/crawl -i -s "${NUTCH_HOME}/urls" "${DATA_HOME}/crawl" ${ROUNDS}
+	cd "${NUTCH_HOME}" || exit
+	bin/crawl -i -s ./urls/ ./crawl/ "${ROUNDS}"
 	echo "Crawling is finished."
 	exit 0
 fi
