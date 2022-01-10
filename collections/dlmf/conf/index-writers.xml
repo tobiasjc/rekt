@@ -18,7 +18,7 @@
 <writers xmlns="http://lucene.apache.org/nutch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://lucene.apache.org/nutch index-writers.xsd">
 	<writer id="indexer_kafka_1" class="org.apache.nutch.indexwriter.kafka.KafkaIndexWriter">
 		<parameters>
-			<param name="host" value="localhost" />
+			<param name="host" value="kafka" />
 			<param name="port" value="9092" />
 			<param name="topic" value="main-topic" />
 			<param name="key.serializer" value="org.apache.kafka.common.serialization.ByteArraySerializer" />
