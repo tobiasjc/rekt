@@ -154,7 +154,7 @@ verify
 
 # do the copying
 echo "Installing the configuration..."
-cp -rvf "${COLLECTION_PATH}"/ "${NUTCH_HOME}"
+cp -rvf "${COLLECTION_PATH}"/* "${NUTCH_HOME}"
 echo "Configuration installed with success!"
 
 # entry main loop
