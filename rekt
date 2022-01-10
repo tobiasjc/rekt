@@ -21,7 +21,6 @@ function help() {
 }
 
 START="false"
-ROUNDS="-1"
 eval set -- "$OPTS"
 while true; do
 	case "$1" in
@@ -55,6 +54,7 @@ while true; do
 done
 
 # set environment variables
+ROUNDS=${ROUNDS:="-1"}
 REKT_HOME=${REKT_HOME:="./"}
 DATA_HOME=${DATA_HOME:="${NUTCH_HOME}"}
 COLLECTIONS_FOLDER="${REKT_HOME}/collections"
