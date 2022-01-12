@@ -4,13 +4,13 @@ OPTS=$(getopt -o sq:n:r:c:h --long start,nutch-home:,rekt:,collection:,help -- "
 
 function help() {
 	printf "SYNOPSIS\\n"
-	printf "\\trekt [-s | --start] [-q | --quantity] QUANTITY [-n | --nutch-home] NUTCH_HOME [-r | --rekt-home] REKT_HOME [-c | --collection] COLLECTION_NAME\\n"
+	printf "\\trekt [-s | --start] [-q | --rounds] ROUNDS [-n | --nutch-home] NUTCH_HOME [-r | --rekt-home] REKT_HOME [-c | --collection] COLLECTION_NAME\\n"
 	printf "\\nOPTIONS\\n"
 	printf "\\t-s | --start,\\n"
 	printf "\\tstart the script to crawl the website\\n"
 
 	printf "\\nARGUMENTS\\n"
-	printf "\\tQUANTITY is to define the amount of rounds you want the crawler to go. When this variable is not set, the quantity is -1, which means the crawler will not stop until the whole domain under the rules is fetch.\\n"
+	printf "\\tROUNDS is to define the amount of rounds you want the crawler to go. When this variable is not set, the rounds is -1, which means the crawler will not stop until the whole domain under the rules is fetch.\\n"
 	printf "\\tNUTCH_HOME is the path to the home folder of your nutch instalation. The home folder can be iddentified by having the 'bin' and 'conf' directories at the same level.\\n"
 	printf "\\tREKT_HOME is the path to the rekt instalation toplevel directiory. The toplevel directory can be idenfied by having the 'collections' folder at the same level.\\n "
 	printf "\\tCOLLECTION_NAME can be one of the names available inside the collections folder\\n"
@@ -21,7 +21,6 @@ function help() {
 }
 
 START="false"
-QUANTITY="-1"
 eval set -- "$OPTS"
 while true; do
 	case "$1" in
@@ -29,8 +28,8 @@ while true; do
 		START="true"
 		shift 1
 		;;
-	-q | --quantity)
-		QUANTITY="$2"
+	-q | --rounds)
+		ROUNDS="$2"
 		shift 2
 		;;
 	-n | --nutch-home)
@@ -55,9 +54,10 @@ while true; do
 done
 
 # set environment variables
-REKT_HOME=${REKT_HOME:?"./"}
+ROUNDS=${ROUNDS:="-1"}
+REKT_HOME=${REKT_HOME:="./"}
 COLLECTIONS_FOLDER="${REKT_HOME}/collections"
-CHOSEN_COLLECTION="${COLLECTIONS_FOLDER}/${COLLECTION}"
+COLLECTION_PATH="${COLLECTIONS_FOLDER}/${COLLECTION}"
 declare -a AVAILABLE_COLLECTIONS
 for c in "${COLLECTIONS_FOLDER}"/*; do
 	AVAILABLE_COLLECTIONS+=("${c##*/}")
@@ -104,6 +104,7 @@ function verify() {
 		echo "This is REQUIRED, the program is going to halt."
 		allowed="false"
 	fi
+
 	if [[ -z "$REKT_HOME" ]]; then
 		printf "\\n\\nEnvironment variable for REKT_HOME is not set.\\n"
 		echo "You can either setup this variable on your environment for this script, or run this script using the parameter [ -r | --rekt-home ]."
@@ -135,7 +136,7 @@ function verify() {
 
 	if ! contains "$COLLECTION" "${AVAILABLE_COLLECTIONS[@]}"; then
 		printf "\\n\\n"
-		echo "Your chosen collection at ${CHOSEN_COLLECTION} seems to not be a valid directory path."
+		echo "Your chosen collection at '${COLLECTION_PATH}' seems to not be a valid directory path."
 		echo "The current available collections at COLLECTIONS_FOLDER=${COLLECTIONS_FOLDER} are: $(format_array "${AVAILABLE_COLLECTIONS[@]}")"
 		echo "Please, chose one of the available and run this script again."
 		echo "This parameter is REQUIRED, the program is going to halt."
@@ -152,12 +153,14 @@ verify
 
 # do the copying
 echo "Installing the configuration..."
-cp -rvf "${CHOSEN_COLLECTION}"/* "${NUTCH_HOME}"
-echo "Configuration installed with success."
+cp -rvf "${COLLECTION_PATH}"/* "${NUTCH_HOME}"
+echo "Configuration installed with success!"
 
+# entry main loop
 if [[ "$START" = "true" ]]; then
 	echo "Start the crawling of collection=${COLLECTION}"
-	"${NUTCH_HOME}"/bin/crawl -i -s "${NUTCH_HOME}"/urls "${NUTCH_HOME}"/crawl "${QUANTITY}"
+	cd "${NUTCH_HOME}" || exit
+	bin/crawl -i -s ./urls/ ./crawl/ "${ROUNDS}"
 	echo "Crawling is finished."
 	exit 0
 fi
