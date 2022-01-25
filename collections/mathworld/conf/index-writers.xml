@@ -30,7 +30,7 @@
 				<field source="title" dest="search" />
 			</copy>
 			<rename>
-				<field source="binaryContent" dest="base64binary" />
+				<field source="binaryContent" dest="base64content" />
 			</rename>
 			<remove>
 				<field source="content" />
