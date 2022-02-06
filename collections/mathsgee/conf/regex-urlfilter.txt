@@ -33,13 +33,13 @@
 # skip URLs with slash-delimited segment that repeats 3+ times, to break loops
 -.*(/[^/]+)/[^/]+\1/[^/]+\1/
 
-# mathsgee: seeds=[http://mathsgee.com/qna/questions?start=0]
+# mathsgee: seeds=[http://mathsgee.com/questions?start=0]
 
 # api call
-+^https?://mathsgee\.com/qna/questions/\?start=(\d+)$
++^https?://mathsgee\.com/questions(/?)\?start=(\d+)$
 
 ## ok paths
-+^https?://mathsgee\.com/qna/([\d]+)/(?!.*(\?show=(\d+))).*
++^https?://mathsgee\.com/([\d]+)/(?!.*(\?show=(\d+))).*
 
 # reject anything else
 -.
